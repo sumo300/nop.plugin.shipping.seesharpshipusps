@@ -1,0 +1,8 @@
+﻿Group: Shipping rate computation
+FriendlyName: SeeSharpShip USPS (US Postal Service)
+SystemName: Shipping.SeeSharpShipUsps
+Version: 1.01
+SupportedVersions: 2.65
+Author: Michael J. Sumerano
+DisplayOrder: 1
+FileName: Nop.Plugin.Shipping.SeeSharpShipUsps.dll
