@@ -39,6 +39,7 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps.Services
 
         public int GetWeightRemainderInOunces(int weightInPounds, decimal weight)
         {
+            // Prevent any potential divide-by-zero errors
             if (weightInPounds <= 0 && weight <= 0)
             {
                 return 0;
