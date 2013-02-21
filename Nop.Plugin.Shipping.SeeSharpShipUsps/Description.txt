@@ -1,7 +1,7 @@
 ﻿Group: Shipping rate computation
 FriendlyName: SeeSharpShip USPS (US Postal Service)
 SystemName: Shipping.SeeSharpShipUsps
-Version: 1.01
+Version: 1.00
 SupportedVersions: 2.65
 Author: Michael J. Sumerano
 DisplayOrder: 1
