@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Web;
 using System.Web.Mvc;
 using Nop.Plugin.Shipping.SeeSharpShipUsps.Models;
 using Nop.Services.Configuration;
@@ -90,7 +92,7 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps.Controllers
                 model.InternationalServices.Add(new USPSSelectableService
                 {
                     Id = int.Parse(service.Id),
-                    Name = service.FullName
+                    Name = GetModifiedServiceName(service.FullName)
                 });
             }
 
@@ -135,7 +137,7 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps.Controllers
                 model.DomesticServices.Add(new USPSSelectableService
                 {
                     Id = int.Parse(service.Id),
-                    Name = service.FullName
+                    Name = GetModifiedServiceName(service.FullName)
                 });
             }
 
@@ -147,6 +149,18 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps.Controllers
 
             enabledServicesCsv = ClearSavedLegacyServices(enabledServicesCsv);
             SelectEnabledServices(enabledServicesCsv, model.DomesticServices);
+        }
+
+        private static string GetModifiedServiceName(string service)
+        {
+            string serviceName = HttpUtility.HtmlDecode(service);
+            const char reg = (char)174;
+            const char trade = (char)8482;
+            serviceName = serviceName.Replace("<sup>®</sup>", reg.ToString(CultureInfo.InvariantCulture));
+            serviceName = serviceName.Replace("<sup>™</sup>", trade.ToString(CultureInfo.InvariantCulture));
+            serviceName = serviceName.Replace(" 1-Day", string.Empty);
+            serviceName = serviceName.Replace(" 2-Day", string.Empty);
+            return serviceName;
         }
 
         private static void SelectEnabledServices(string enabledServicesCsv, IEnumerable<USPSSelectableService> availableServices)

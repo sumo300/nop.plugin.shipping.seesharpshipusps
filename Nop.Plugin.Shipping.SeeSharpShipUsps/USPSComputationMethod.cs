@@ -320,7 +320,7 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps
                         continue;
                     }
 
-                    string serviceName = GetDecodedServiceName(postage.MailService);
+                    string serviceName = GetModifiedServiceName(postage.MailService);
 
                     SpecialService insurance = postage.SpecialServices == null
                                                    ? null
@@ -390,7 +390,7 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps
                         continue;
                     }
 
-                    string serviceName = GetDecodedServiceName(service.SvcDescription);
+                    string serviceName = GetModifiedServiceName(service.SvcDescription);
 
                     ExtraService insurance = service.ExtraServices == null ? null : service.ExtraServices.FirstOrDefault(s => s.ServiceId == "1");
                     decimal rate = service.Postage + (insurance == null ? 0 : insurance.Price) + additionalHandlingCharge;
@@ -420,13 +420,15 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps
             return options;
         }
 
-        private static string GetDecodedServiceName(string service)
+        private static string GetModifiedServiceName(string service)
         {
             string serviceName = HttpUtility.HtmlDecode(service);
             const char reg = (char) 174;
             const char trade = (char) 8482;
-            serviceName = serviceName.Replace("<sup>&reg;</sup>", reg.ToString(CultureInfo.InvariantCulture));
-            serviceName = serviceName.Replace("<sup>&trade;</sup>", trade.ToString(CultureInfo.InvariantCulture));
+            serviceName = serviceName.Replace("<sup>®</sup>", reg.ToString(CultureInfo.InvariantCulture));
+            serviceName = serviceName.Replace("<sup>™</sup>", trade.ToString(CultureInfo.InvariantCulture));
+            serviceName = serviceName.Replace(" 1-Day", string.Empty);
+            serviceName = serviceName.Replace(" 2-Day", string.Empty);
             return serviceName;
         }
 

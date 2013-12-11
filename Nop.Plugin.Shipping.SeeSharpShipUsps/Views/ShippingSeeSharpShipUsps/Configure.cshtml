@@ -73,7 +73,7 @@
                 @Html.NopLabelFor(model => model.BaseDomesticServices):
             </td>
             <td class="adminData">
-                <div style="height: 250px; width: 300px; overflow: auto; border: solid 1px #bbb;">
+                <div style="height: 250px; width: 200px; overflow: auto; border: solid 1px #bbb;">
                     @foreach (var service in Model.BaseDomesticServices)
                     {
                         <input type="checkbox" name="CheckedBaseDomesticServices" value="@(service.Id)" @(service.IsChecked ? Html.Raw(" checked=\"checked\"") : null) />
@@ -88,7 +88,7 @@
                 @Html.NopLabelFor(model => model.DomesticServices):
             </td>
             <td class="adminData">
-                <div style="height: 250px; width: 300px; overflow: auto; border: solid 1px #bbb;">
+                <div style="height: 250px; width: 440px; overflow: auto; border: solid 1px #bbb;">
                     @foreach (var service in Model.DomesticServices)
                     {
                         <input type="checkbox" name="CheckedDomesticServices" value="@(service.Id)" @(service.IsChecked ? Html.Raw(" checked=\"checked\"") : null) />
@@ -103,7 +103,7 @@
                 @Html.NopLabelFor(model => model.BaseInternationalServices):
             </td>
             <td class="adminData">
-                <div style="height: 250px; width: 300px; overflow: auto; border: solid 1px #bbb;">
+                <div style="height: 250px; width: 200px; overflow: auto; border: solid 1px #bbb;">
                     @foreach (var service in Model.BaseInternationalServices)
                     {
                         <input type="checkbox" name="CheckedBaseInternationalServices" value="@(service.Id)" @(service.IsChecked ? Html.Raw(" checked=\"checked\"") : null) />
@@ -118,7 +118,7 @@
                 @Html.NopLabelFor(model => model.InternationalServices):
             </td>
             <td class="adminData">
-                <div style="height: 250px; width: 300px; overflow: auto; border: solid 1px #bbb;">
+                <div style="height: 250px; width: 400px; overflow: auto; border: solid 1px #bbb;">
                     @foreach (var service in Model.InternationalServices)
                     {
                         <input type="checkbox" name="CheckedInternationalServices" value="@(service.Id)" @(service.IsChecked ? Html.Raw(" checked=\"checked\"") : null) />
