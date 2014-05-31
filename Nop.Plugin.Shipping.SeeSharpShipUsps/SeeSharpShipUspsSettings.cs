@@ -1,9 +1,7 @@
 using Nop.Core.Configuration;
 
-namespace Nop.Plugin.Shipping.SeeSharpShipUsps
-{
-    public class SeeSharpShipUspsSettings : ISettings
-    {
+namespace Nop.Plugin.Shipping.SeeSharpShipUsps {
+    public class SeeSharpShipUspsSettings : ISettings {
         public string Url { get; set; }
 
         public string Username { get; set; }

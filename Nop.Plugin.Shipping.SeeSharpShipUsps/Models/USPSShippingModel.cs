@@ -1,12 +1,9 @@
 using System.Collections.Generic;
 using Nop.Web.Framework;
 
-namespace Nop.Plugin.Shipping.SeeSharpShipUsps.Models
-{
-    public class USPSShippingModel
-    {
-        public USPSShippingModel()
-        {
+namespace Nop.Plugin.Shipping.SeeSharpShipUsps.Models {
+    public class USPSShippingModel {
+        public USPSShippingModel() {
             BaseDomesticServices = new List<USPSSelectableService>();
             DomesticServices = new List<USPSSelectableService>();
             BaseInternationalServices = new List<USPSSelectableService>();
