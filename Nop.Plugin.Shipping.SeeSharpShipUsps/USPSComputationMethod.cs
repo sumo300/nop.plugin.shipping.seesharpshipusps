@@ -18,6 +18,7 @@ using Nop.Services.Catalog;
 using Nop.Services.Configuration;
 using Nop.Services.Directory;
 using Nop.Services.Localization;
+using Nop.Services.Logging;
 using Nop.Services.Shipping;
 using Nop.Services.Shipping.Tracking;
 using SeeSharpShip.Extensions;
@@ -32,26 +33,26 @@ using Package = SeeSharpShip.Models.Usps.Domestic.Response.Package;
 
 namespace Nop.Plugin.Shipping.SeeSharpShipUsps {
     public class USPSComputationMethod : BasePlugin, IShippingRateComputationMethod {
+        private readonly ILogger _loggerService;
         private readonly IPriceCalculationService _priceCalculationService;
         private readonly IRateService _rateService;
         private readonly ISettingService _settingService;
-        private readonly ITrackService _trackService;
         private readonly USPSPackageSplitterService _uspsPackageSplitter;
         private readonly SeeSharpShipUspsSettings _uspsSettings;
         private readonly USPSVolumetricsService _uspsVolumetricsService;
 
-        public USPSComputationMethod(IMeasureService measureService, ISettingService settingService, IShippingService shippingService, SeeSharpShipUspsSettings uspsSettings,
-            IPriceCalculationService priceCalculationService, MeasureSettings measureSettings) {
+        public USPSComputationMethod(IMeasureService measureService, ISettingService settingService, IShippingService shippingService,
+            SeeSharpShipUspsSettings uspsSettings,
+            IPriceCalculationService priceCalculationService, MeasureSettings measureSettings, ILogger logger) {
             _uspsVolumetricsService = new USPSVolumetricsService(measureService, shippingService, measureSettings);
             _settingService = settingService;
             _uspsSettings = uspsSettings;
             _priceCalculationService = priceCalculationService;
+            _loggerService = logger;
             _uspsPackageSplitter = new USPSPackageSplitterService(measureService, shippingService, measureSettings);
 
-            // ReSharper disable CSharpWarnings::CS0618
+            // ReSharper disable once CSharpWarnings::CS0618
             _rateService = string.IsNullOrWhiteSpace(_uspsSettings.Url) ? new RateService() : new RateService(_uspsSettings.Url, new PostRequest());
-            _trackService = string.IsNullOrWhiteSpace(_uspsSettings.Url) ? new TrackService() : new TrackService(_uspsSettings.Url, new PostRequest());
-            // ReSharper restore CSharpWarnings::CS0618
         }
 
         #region IShippingRateComputationMethod Members
@@ -210,7 +211,7 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps {
         ///     Gets a shipment tracker
         /// </summary>
         public IShipmentTracker ShipmentTracker {
-            get { return new USPSShipmentTracker(_trackService, _uspsSettings.Url); }
+            get { return new USPSShipmentTracker(_loggerService, _uspsSettings); }
         }
 
         #endregion
