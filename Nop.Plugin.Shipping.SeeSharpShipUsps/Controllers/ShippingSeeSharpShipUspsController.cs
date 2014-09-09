@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.UI.WebControls;
 using Nop.Plugin.Shipping.SeeSharpShipUsps.Models;
 using Nop.Services.Configuration;
 using Nop.Web.Framework.Controllers;
@@ -53,7 +54,7 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps.Controllers {
             }
 
             // ReSharper disable once Mvc.ViewNotResolved
-            return View("Nop.Plugin.Shipping.SeeSharpShipUsps.Views.ShippingSeeSharpShipUsps.Configure", model);
+            return View("~/Plugins/Shipping.SeeSharpShipUsps/Views/ShippingSeeSharpShipUsps/Configure.cshtml", model);
         }
 
         private void LoadBaseInternationalServices(USPSShippingModel model) {
