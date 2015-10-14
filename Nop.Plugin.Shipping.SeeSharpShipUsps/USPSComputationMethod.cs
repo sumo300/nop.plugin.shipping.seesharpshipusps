@@ -478,7 +478,7 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps {
             MeasureDimension usedMeasureDimension = _uspsVolumetricsService.GetUsedMeasureDimension();
             MeasureDimension baseUsedMeasureDimension = _uspsVolumetricsService.GetBaseUsedMeasureDimension();
 
-            IList<ShoppingCartItem> items = GetShippableCartItems(shipmentPackage);
+            IList<GetShippingOptionRequest.PackageItem> items = GetShippableCartItems(shipmentPackage);
             decimal weight = _uspsVolumetricsService.GetWeight(items);
             int packageLength = _uspsVolumetricsService.GetLength(shipmentPackage, usedMeasureDimension, baseUsedMeasureDimension);
             int packageHeight = _uspsVolumetricsService.GetHeight(shipmentPackage, usedMeasureDimension, baseUsedMeasureDimension);
@@ -500,13 +500,24 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps {
             });
         }
 
-        private static IList<ShoppingCartItem> GetShippableCartItems(GetShippingOptionRequest shipmentPackage) {
-            List<ShoppingCartItem> items = shipmentPackage.Items
-                .Where(i => i.IsShipEnabled)
-                .Where(i => i.Product.IsShipEnabled)
-                .Where(i => !i.IsFreeShipping)
-                .Where(i => !i.Product.IsGiftCard)
-                .Where(i => !i.Product.IsDownload)
+        //private static IList<ShoppingCartItem> GetShippableCartItems(GetShippingOptionRequest shipmentPackage) {
+        //    List<ShoppingCartItem> items = shipmentPackage.Items
+        //        .Where(i => i.ShoppingCartItem.IsShipEnabled)
+        //        .Where(i => !i.ShoppingCartItem.IsFreeShipping)
+        //        .Where(i => !i.ShoppingCartItem.Product.IsGiftCard)
+        //        .Where(i => !i.ShoppingCartItem.Product.IsShipEnabled)
+        //        .Where(i => !i.ShoppingCartItem.Product.IsDownload)
+        //        .ToList();
+        //    return items;
+        //}
+
+        private static IList<GetShippingOptionRequest.PackageItem> GetShippableCartItems(GetShippingOptionRequest shipmentPackage) {
+            List<GetShippingOptionRequest.PackageItem> items = shipmentPackage.Items
+                .Where(i => i.ShoppingCartItem.IsShipEnabled)
+                .Where(i => !i.ShoppingCartItem.IsFreeShipping)
+                .Where(i => !i.ShoppingCartItem.Product.IsGiftCard)
+                .Where(i => !i.ShoppingCartItem.Product.IsShipEnabled)
+                .Where(i => !i.ShoppingCartItem.Product.IsDownload)
                 .ToList();
             return items;
         }
@@ -556,7 +567,7 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps {
         }
 
         private decimal GetPackageSubTotal(GetShippingOptionRequest shipmentPackage) {
-            return shipmentPackage.Items.Where(item => !item.IsFreeShipping).Sum(item => _priceCalculationService.GetSubTotal(item, true));
+            return shipmentPackage.Items.Where(item => !item.ShoppingCartItem.IsFreeShipping).Sum(item => _priceCalculationService.GetSubTotal(item.ShoppingCartItem, true));
         }
 
         protected bool IsDomesticRequest(GetShippingOptionRequest shipmentPackage) {

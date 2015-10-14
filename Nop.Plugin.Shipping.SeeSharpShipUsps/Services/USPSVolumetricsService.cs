@@ -63,29 +63,35 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps.Services {
             return weight <= 0 ? 0 : Convert.ToInt32(Math.Floor(weight * _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).Ratio));
         }
 
-        public int GetWidth(GetShippingOptionRequest shipmentPackage, MeasureDimension usedMeasureDimension,
-            MeasureDimension baseUsedMeasureDimension) {
-            decimal totalWidth = _shippingService.GetTotalWidth(shipmentPackage.Items);
-            int packageWidth = Convert.ToInt32(Math.Ceiling(totalWidth / (baseUsedMeasureDimension.Ratio * usedMeasureDimension.Ratio)));
+        public int GetWidth(GetShippingOptionRequest shipmentPackage, MeasureDimension usedMeasureDimension, MeasureDimension baseUsedMeasureDimension) {
+            decimal lengthTmp, widthTmp, heightTmp;
+            _shippingService.GetDimensions(shipmentPackage.Items, out widthTmp, out lengthTmp, out heightTmp);
+
+            int packageWidth = Convert.ToInt32(Math.Ceiling(widthTmp / baseUsedMeasureDimension.Ratio * usedMeasureDimension.Ratio));
+
             return packageWidth < 1 ? 1 : packageWidth;
         }
 
-        public int GetHeight(GetShippingOptionRequest shipmentPackage, MeasureDimension usedMeasureDimension,
-            MeasureDimension baseUsedMeasureDimension) {
-            decimal totalHeight = _shippingService.GetTotalHeight(shipmentPackage.Items);
-            int packageHeight = Convert.ToInt32(Math.Ceiling(totalHeight / (baseUsedMeasureDimension.Ratio * usedMeasureDimension.Ratio)));
+        public int GetHeight(GetShippingOptionRequest shipmentPackage, MeasureDimension usedMeasureDimension, MeasureDimension baseUsedMeasureDimension) {
+            decimal lengthTmp, widthTmp, heightTmp;
+            _shippingService.GetDimensions(shipmentPackage.Items, out widthTmp, out lengthTmp, out heightTmp);
+
+            int packageHeight = Convert.ToInt32(Math.Ceiling(heightTmp / baseUsedMeasureDimension.Ratio * usedMeasureDimension.Ratio));
+
             return packageHeight < 1 ? 1 : packageHeight;
         }
 
-        public int GetLength(GetShippingOptionRequest shipmentPackage, MeasureDimension usedMeasureDimension,
-            MeasureDimension baseUsedMeasureDimension) {
-            decimal totalLength = _shippingService.GetTotalLength(shipmentPackage.Items);
-            int packageLength = Convert.ToInt32(Math.Ceiling(totalLength / (baseUsedMeasureDimension.Ratio * usedMeasureDimension.Ratio)));
+        public int GetLength(GetShippingOptionRequest shipmentPackage, MeasureDimension usedMeasureDimension, MeasureDimension baseUsedMeasureDimension) {
+            decimal lengthTmp, widthTmp, heightTmp;
+            _shippingService.GetDimensions(shipmentPackage.Items, out widthTmp, out lengthTmp, out heightTmp);
+
+            int packageLength = Convert.ToInt32(Math.Ceiling(lengthTmp / baseUsedMeasureDimension.Ratio * usedMeasureDimension.Ratio));
+
             return packageLength < 1 ? 1 : packageLength;
         }
 
-        public decimal GetWeight(IEnumerable<ShoppingCartItem> items) {
-            decimal totalWeight = items.Sum(i => i.Product.Weight * i.Quantity);
+        public decimal GetWeight(IEnumerable<GetShippingOptionRequest.PackageItem> items) {
+            decimal totalWeight = items.Sum(i => i.ShoppingCartItem.Product.Weight * i.ShoppingCartItem.Quantity);
             return totalWeight * GetBaseUsedMeasureWeight().Ratio;
         }
 
