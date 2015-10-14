@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.UI.WebControls;
 using Nop.Plugin.Shipping.SeeSharpShipUsps.Models;
 using Nop.Services.Configuration;
 using Nop.Web.Framework.Controllers;
@@ -12,6 +11,7 @@ using SeeSharpShip.Models.Usps.Domestic;
 using SeeSharpShip.Models.Usps.International.Request;
 using SeeSharpShip.Services.Usps;
 using SeeSharpShip.Utilities;
+using System.Diagnostics;
 
 namespace Nop.Plugin.Shipping.SeeSharpShipUsps.Controllers {
     [AdminAuthorize]
@@ -53,8 +53,16 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps.Controllers {
                 }
             }
 
+            model.PluginVersion = GetPluginVersion();
+
             // ReSharper disable once Mvc.ViewNotResolved
             return View("~/Plugins/Shipping.SeeSharpShipUsps/Views/ShippingSeeSharpShipUsps/Configure.cshtml", model);
+        }
+
+        private string GetPluginVersion() {
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+            return fvi.FileVersion;
         }
 
         private void LoadBaseInternationalServices(USPSShippingModel model) {

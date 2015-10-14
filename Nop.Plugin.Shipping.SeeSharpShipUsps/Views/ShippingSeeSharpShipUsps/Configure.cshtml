@@ -3,8 +3,8 @@
 }
 @model Nop.Plugin.Shipping.SeeSharpShipUsps.Models.USPSShippingModel
 @using Nop.Web.Framework;
-@using (Html.BeginForm())
-{
+@using (Html.BeginForm()) {
+    @Html.AntiForgeryToken()
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
@@ -131,6 +131,11 @@
         <tr>
             <td colspan="2" width="100%">
                 <input type="submit" name="save" class="t-button" value="@T("Admin.Common.Save")" />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" width="100%">
+                Plugin Version: @Model.PluginVersion
             </td>
         </tr>
     </table>    

@@ -90,11 +90,6 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps.Services {
             return packageLength < 1 ? 1 : packageLength;
         }
 
-        public decimal GetWeight(IEnumerable<GetShippingOptionRequest.PackageItem> items) {
-            decimal totalWeight = items.Sum(i => i.ShoppingCartItem.Product.Weight * i.ShoppingCartItem.Quantity);
-            return totalWeight * GetBaseUsedMeasureWeight().Ratio;
-        }
-
         public MeasureDimension GetUsedMeasureDimension() {
             MeasureDimension usedMeasureDimension = _measureService.GetMeasureDimensionBySystemKeyword(USPSConstants.MeasureDimensionSystemKeyword);
 

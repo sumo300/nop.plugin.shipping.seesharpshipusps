@@ -9,7 +9,6 @@ using System.Linq;
 using System.Web;
 using System.Web.Routing;
 using Nop.Core.Domain.Directory;
-using Nop.Core.Domain.Orders;
 using Nop.Core.Domain.Shipping;
 using Nop.Core.Plugins;
 using Nop.Plugin.Shipping.SeeSharpShipUsps.Domain;
@@ -37,6 +36,7 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps {
         private readonly IPriceCalculationService _priceCalculationService;
         private readonly IRateService _rateService;
         private readonly ISettingService _settingService;
+        private readonly IShippingService _shippingService;
         private readonly USPSPackageSplitterService _uspsPackageSplitter;
         private readonly SeeSharpShipUspsSettings _uspsSettings;
         private readonly USPSVolumetricsService _uspsVolumetricsService;
@@ -46,6 +46,7 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps {
             IPriceCalculationService priceCalculationService, MeasureSettings measureSettings, ILogger logger) {
             _uspsVolumetricsService = new USPSVolumetricsService(measureService, shippingService, measureSettings);
             _settingService = settingService;
+            _shippingService = shippingService;
             _uspsSettings = uspsSettings;
             _priceCalculationService = priceCalculationService;
             _loggerService = logger;
@@ -398,7 +399,8 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps {
 
         private IntlRateV2Request CreateInternationalRequest(GetShippingOptionRequest shipmentPackage, string username, string password) {
             var request = new IntlRateV2Request {UserId = username, Password = password, Packages = new List<InternationalPackage>()};
-            IEnumerable<List<USPSVolumetrics>> splitVolumetrics = SplitShipmentByVolumetrics(shipmentPackage);
+            decimal totalWeight = _shippingService.GetTotalWeight(shipmentPackage);
+            IEnumerable<List<USPSVolumetrics>> splitVolumetrics = SplitShipmentByVolumetrics(shipmentPackage, totalWeight);
 
             foreach (var item in splitVolumetrics) {
                 foreach (MailType baseService in EnabledBaseInternationalServices()) {
@@ -411,7 +413,8 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps {
 
         private RateV4Request CreateDomesticRequest(GetShippingOptionRequest shipmentPackage, string username, string password) {
             var request = new RateV4Request {UserId = username, Password = password, Packages = new List<DomesticPackage>()};
-            IEnumerable<List<USPSVolumetrics>> splitVolumetrics = SplitShipmentByVolumetrics(shipmentPackage);
+            decimal totalWeight = _shippingService.GetTotalWeight(shipmentPackage);
+            IEnumerable<List<USPSVolumetrics>> splitVolumetrics = SplitShipmentByVolumetrics(shipmentPackage, totalWeight);
 
             foreach (var item in splitVolumetrics) {
                 foreach (ServiceTypes baseService in EnabledBaseDomesticServices()) {
@@ -474,21 +477,28 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps {
             return !_uspsSettings.InsuranceEnabled ? null : new ExtraServices {ExtraService = new[] {"1"}};
         }
 
-        private IEnumerable<List<USPSVolumetrics>> SplitShipmentByVolumetrics(GetShippingOptionRequest shipmentPackage) {
+        private IEnumerable<List<USPSVolumetrics>> SplitShipmentByVolumetrics(GetShippingOptionRequest shipmentPackage, decimal totalWeight) {
             MeasureDimension usedMeasureDimension = _uspsVolumetricsService.GetUsedMeasureDimension();
             MeasureDimension baseUsedMeasureDimension = _uspsVolumetricsService.GetBaseUsedMeasureDimension();
 
             IList<GetShippingOptionRequest.PackageItem> items = GetShippableCartItems(shipmentPackage);
-            decimal weight = _uspsVolumetricsService.GetWeight(items);
+            
+            decimal weight = totalWeight;
             int packageLength = _uspsVolumetricsService.GetLength(shipmentPackage, usedMeasureDimension, baseUsedMeasureDimension);
             int packageHeight = _uspsVolumetricsService.GetHeight(shipmentPackage, usedMeasureDimension, baseUsedMeasureDimension);
             int packageWidth = _uspsVolumetricsService.GetWidth(shipmentPackage, usedMeasureDimension, baseUsedMeasureDimension);
 
             IList<List<USPSVolumetrics>> splitVolumetrics = null;
+
+            // First, split items that must be shipped separately
+            splitVolumetrics = _uspsPackageSplitter.SplitByShipSeparately(items).ToList();
+
+            // Next, split items that are too heavy
             if (_uspsVolumetricsService.IsTooHeavy(weight)) {
                 splitVolumetrics = _uspsPackageSplitter.SplitByWeight(items).ToList();
             }
 
+            // Lastly, split items that are too large volumetrically
             if (_uspsVolumetricsService.IsTooLarge(packageLength, packageHeight, packageWidth)) {
                 splitVolumetrics = splitVolumetrics == null
                     ? _uspsPackageSplitter.SplitByMeasuredSize(items).ToList()
@@ -500,24 +510,12 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps {
             });
         }
 
-        //private static IList<ShoppingCartItem> GetShippableCartItems(GetShippingOptionRequest shipmentPackage) {
-        //    List<ShoppingCartItem> items = shipmentPackage.Items
-        //        .Where(i => i.ShoppingCartItem.IsShipEnabled)
-        //        .Where(i => !i.ShoppingCartItem.IsFreeShipping)
-        //        .Where(i => !i.ShoppingCartItem.Product.IsGiftCard)
-        //        .Where(i => !i.ShoppingCartItem.Product.IsShipEnabled)
-        //        .Where(i => !i.ShoppingCartItem.Product.IsDownload)
-        //        .ToList();
-        //    return items;
-        //}
-
         private static IList<GetShippingOptionRequest.PackageItem> GetShippableCartItems(GetShippingOptionRequest shipmentPackage) {
             List<GetShippingOptionRequest.PackageItem> items = shipmentPackage.Items
-                .Where(i => i.ShoppingCartItem.IsShipEnabled)
-                .Where(i => !i.ShoppingCartItem.IsFreeShipping)
-                .Where(i => !i.ShoppingCartItem.Product.IsGiftCard)
-                .Where(i => !i.ShoppingCartItem.Product.IsShipEnabled)
-                .Where(i => !i.ShoppingCartItem.Product.IsDownload)
+                .Where(i => i.ShoppingCartItem.IsShipEnabled &&
+                    i.ShoppingCartItem.Product.IsShipEnabled &&
+                    !i.ShoppingCartItem.Product.IsGiftCard && 
+                    !i.ShoppingCartItem.Product.IsDownload)
                 .ToList();
             return items;
         }

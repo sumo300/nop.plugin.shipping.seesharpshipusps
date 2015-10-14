@@ -13,6 +13,36 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps.Services {
             _uspsVolumetricsService = new USPSVolumetricsService(measureService, shippingService, measureSettings);
         }
 
+        public IEnumerable<List<USPSVolumetrics>> SplitByShipSeparately(IEnumerable<GetShippingOptionRequest.PackageItem> items) {
+            decimal weight = 0;
+            var splitItems = new List<USPSVolumetrics>();
+
+            foreach (GetShippingOptionRequest.PackageItem item in items) {
+                decimal currentWeight = item.ShoppingCartItem.Product.Weight * item.ShoppingCartItem.Quantity;
+
+                if (item.ShoppingCartItem.Product.ShipSeparately) {
+                    foreach (var p in SplitItemIntoPackages(item, 1, currentWeight)) {
+                        yield return p;
+                    }
+
+                    continue;
+                }
+
+                weight += currentWeight;
+
+                splitItems.Add(new USPSVolumetrics {
+                    Height = (int)GetTotalHeightForCartItem(item),
+                    Length = (int)GetTotalLengthForCartItem(item),
+                    Weight = currentWeight,
+                    Width = (int)GetTotalWidthForCartItem(item)
+                });
+            }
+
+            if (splitItems.Count > 0) {
+                yield return splitItems;
+            }
+        }
+
         /// <summary>
         ///     Splits a package by weight by yielding multple lists of volumetrics
         ///     using the MaxPackageWeight as the partition.
