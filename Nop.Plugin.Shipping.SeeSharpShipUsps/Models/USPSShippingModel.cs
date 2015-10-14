@@ -50,5 +50,7 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps.Models {
         public string[] CheckedBaseInternationalServices { get; set; }
 
         public string[] CheckedInternationalServices { get; set; }
+
+        public string PluginVersion { get; set; }
     }
 }
