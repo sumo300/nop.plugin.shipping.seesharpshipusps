@@ -6,7 +6,8 @@ using Nop.Services.Directory;
 using Nop.Services.Shipping;
 
 namespace Nop.Plugin.Shipping.SeeSharpShipUsps.Services {
-    public class USPSPackageSplitterService {
+    public class USPSPackageSplitterService
+    {
         private readonly USPSVolumetricsService _uspsVolumetricsService;
 
         public USPSPackageSplitterService(IMeasureService measureService, IShippingService shippingService, MeasureSettings measureSettings) {
@@ -14,7 +15,6 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps.Services {
         }
 
         public IEnumerable<List<USPSVolumetrics>> SplitByShipSeparately(IEnumerable<GetShippingOptionRequest.PackageItem> items) {
-            decimal weight = 0;
             var splitItems = new List<USPSVolumetrics>();
 
             foreach (GetShippingOptionRequest.PackageItem item in items) {
@@ -27,8 +27,6 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps.Services {
 
                     continue;
                 }
-
-                weight += currentWeight;
 
                 splitItems.Add(new USPSVolumetrics {
                     Height = (int)GetTotalHeightForCartItem(item),
