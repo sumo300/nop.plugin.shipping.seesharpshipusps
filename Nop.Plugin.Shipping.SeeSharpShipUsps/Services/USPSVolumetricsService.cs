@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Nop.Core;
 using Nop.Core.Domain.Directory;
-using Nop.Core.Domain.Orders;
 using Nop.Services.Directory;
 using Nop.Services.Shipping;
 
@@ -94,8 +91,7 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps.Services {
             MeasureDimension usedMeasureDimension = _measureService.GetMeasureDimensionBySystemKeyword(USPSConstants.MeasureDimensionSystemKeyword);
 
             if (usedMeasureDimension == null) {
-                throw new NopException(string.Format("USPS shipping service. Could not load \"{0}\" measure dimension (target) conversion ratio",
-                    USPSConstants.MeasureDimensionSystemKeyword));
+                throw new NopException($"USPS shipping service. Could not load \"{USPSConstants.MeasureDimensionSystemKeyword}\" measure dimension (target) conversion ratio");
             }
 
             return usedMeasureDimension;
@@ -115,7 +111,7 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps.Services {
             MeasureWeight baseUsedMeasureWeight = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId);
 
             if (baseUsedMeasureWeight == null) {
-                throw new NopException(string.Format("USPS shipping service.  Could not load default weight dimension (current) conversion ratio"));
+                throw new NopException("USPS shipping service.  Could not load default weight dimension (current) conversion ratio");
             }
 
             return baseUsedMeasureWeight;

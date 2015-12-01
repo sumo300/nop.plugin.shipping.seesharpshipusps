@@ -51,7 +51,7 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps {
             _priceCalculationService = priceCalculationService;
             _loggerService = logger;
             _uspsPackageSplitter = new USPSPackageSplitterService(measureService, shippingService, measureSettings);
-
+            
             // ReSharper disable once CSharpWarnings::CS0618
             _rateService = string.IsNullOrWhiteSpace(_uspsSettings.Url) ? new RateService() : new RateService(_uspsSettings.Url, new PostRequest());
         }
@@ -65,7 +65,7 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps {
         /// <returns>Represents a response of getting shipping rate options</returns>
         public GetShippingOptionResponse GetShippingOptions(GetShippingOptionRequest getShippingOptionRequest) {
             if (getShippingOptionRequest == null) {
-                throw new ArgumentNullException("getShippingOptionRequest");
+                throw new ArgumentNullException(nameof(getShippingOptionRequest));
             }
 
             var response = new GetShippingOptionResponse();
@@ -204,16 +204,12 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps {
         /// <summary>
         ///     Gets a shipping rate computation method type
         /// </summary>
-        public ShippingRateComputationMethodType ShippingRateComputationMethodType {
-            get { return ShippingRateComputationMethodType.Realtime; }
-        }
+        public ShippingRateComputationMethodType ShippingRateComputationMethodType => ShippingRateComputationMethodType.Realtime;
 
         /// <summary>
         ///     Gets a shipment tracker
         /// </summary>
-        public IShipmentTracker ShipmentTracker {
-            get { return new USPSShipmentTracker(_loggerService, _uspsSettings); }
-        }
+        public IShipmentTracker ShipmentTracker => new USPSShipmentTracker(_loggerService, _uspsSettings);
 
         #endregion
 
@@ -239,7 +235,7 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps {
 
         private static void AddPrefixToEachShippingOption(IEnumerable<ShippingOption> shippingOptions) {
             foreach (ShippingOption option in shippingOptions.Where(option => !option.Name.StartsWith("USPS", StringComparison.CurrentCultureIgnoreCase))) {
-                option.Name = string.Format("USPS {0}", option.Name);
+                option.Name = $"USPS {option.Name}";
             }
         }
 
@@ -276,11 +272,11 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps {
 
         private List<ShippingOption> InterpretShippingOptions(RateV4Response response, decimal minimumShippingRate) {
             if (response == null) {
-                throw new ArgumentNullException("response");
+                throw new ArgumentNullException(nameof(response));
             }
 
             if (minimumShippingRate < 0) {
-                throw new ArgumentOutOfRangeException("minimumShippingRate", minimumShippingRate, "minimumShippingRate must be greater than zero");
+                throw new ArgumentOutOfRangeException(nameof(minimumShippingRate), minimumShippingRate, "minimumShippingRate must be greater than zero");
             }
 
             string[] carrierServicesOffered = _uspsSettings.DomesticServicesSelected.Split(',');
@@ -302,10 +298,8 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps {
 
                     string serviceName = GetModifiedServiceName(postage.MailService);
 
-                    SpecialService insurance = postage.SpecialServices == null
-                        ? null
-                        : postage.SpecialServices.FirstOrDefault(s => s.ServiceId == "1" || s.ServiceId == "11");
-                    decimal rate = postage.Rate + (insurance == null ? 0 : insurance.Price) + additionalHandlingCharge;
+                    SpecialService insurance = postage.SpecialServices?.FirstOrDefault(s => s.ServiceId == "1" || s.ServiceId == "11");
+                    decimal rate = postage.Rate + (insurance?.Price ?? 0) + additionalHandlingCharge;
                     ShippingOption shippingOption = options.Find(o => o.Name == serviceName);
 
                     // Use min shipping amount if rate is less than minimum
@@ -331,7 +325,7 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps {
 
         private List<ShippingOption> InterpretShippingOptions(IntlRateV2Response response, decimal minimumShippingRate) {
             if (response == null) {
-                throw new ArgumentNullException("response");
+                throw new ArgumentNullException(nameof(response));
             }
 
             if (response.Error != null) {
@@ -339,7 +333,7 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps {
             }
 
             if (minimumShippingRate < 0) {
-                throw new ArgumentOutOfRangeException("minimumShippingRate", minimumShippingRate, "minimumShippingRate must be greater than zero");
+                throw new ArgumentOutOfRangeException(nameof(minimumShippingRate), minimumShippingRate, "minimumShippingRate must be greater than zero");
             }
 
             string[] carrierServicesOffered = _uspsSettings.InternationalServicesSelected.Split(',');
@@ -361,8 +355,8 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps {
 
                     string serviceName = GetModifiedServiceName(service.SvcDescription);
 
-                    ExtraService insurance = service.ExtraServices == null ? null : service.ExtraServices.FirstOrDefault(s => s.ServiceId == "1");
-                    decimal rate = service.Postage + (insurance == null ? 0 : insurance.Price) + additionalHandlingCharge;
+                    ExtraService insurance = service.ExtraServices?.FirstOrDefault(s => s.ServiceId == "1");
+                    decimal rate = service.Postage + (insurance?.Price ?? 0) + additionalHandlingCharge;
                     ShippingOption shippingOption = options.Find(o => o.Name == serviceName);
 
                     // Use min shipping amount if rate is less than minimum
@@ -438,9 +432,9 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps {
                 Width = item.Sum(i => i.Width),
                 Pounds = pounds,
                 Ounces = ounces,
-                Value = string.Format("{0:0.00}", GetPackageSubTotal(shipmentPackage)),
+                Value = $"{GetPackageSubTotal(shipmentPackage):0.00}",
                 Container = "RECTANGULAR",
-                ShipDate = string.Format("{0:dd-MMM-yyyy}", DateTime.Now.Date),
+                ShipDate = $"{DateTime.Now.Date:dd-MMM-yyyy}",
                 SelectedServiceType = baseService,
                 SpecialServices = GetSpecialServicesForInsurance(baseService)
             };
@@ -460,7 +454,7 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps {
                 Width = item.Sum(i => i.Width),
                 Pounds = pounds,
                 Ounces = ounces,
-                ValueOfContents = string.Format("{0:0.00}", GetPackageSubTotal(shipmentPackage)),
+                ValueOfContents = $"{GetPackageSubTotal(shipmentPackage):0.00}",
                 Container = "RECTANGULAR",
                 SelectedMailType = baseService,
                 ExtraServices = GetExtraServicesForInsurance()
@@ -488,10 +482,8 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps {
             int packageHeight = _uspsVolumetricsService.GetHeight(shipmentPackage, usedMeasureDimension, baseUsedMeasureDimension);
             int packageWidth = _uspsVolumetricsService.GetWidth(shipmentPackage, usedMeasureDimension, baseUsedMeasureDimension);
 
-            IList<List<USPSVolumetrics>> splitVolumetrics = null;
-
             // First, split items that must be shipped separately
-            splitVolumetrics = _uspsPackageSplitter.SplitByShipSeparately(items).ToList();
+            IList<List<USPSVolumetrics>> splitVolumetrics = _uspsPackageSplitter.SplitByShipSeparately(items).ToList();
 
             // Next, split items that are too heavy
             if (_uspsVolumetricsService.IsTooHeavy(weight)) {
@@ -500,14 +492,10 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps {
 
             // Lastly, split items that are too large volumetrically
             if (_uspsVolumetricsService.IsTooLarge(packageLength, packageHeight, packageWidth)) {
-                splitVolumetrics = splitVolumetrics == null
-                    ? _uspsPackageSplitter.SplitByMeasuredSize(items).ToList()
-                    : splitVolumetrics.Concat(_uspsPackageSplitter.SplitByMeasuredSize(items)).ToList();
+                splitVolumetrics = splitVolumetrics.Concat(_uspsPackageSplitter.SplitByMeasuredSize(items)).ToList();
             }
 
-            return splitVolumetrics ?? (new List<List<USPSVolumetrics>> {
-                new List<USPSVolumetrics> {new USPSVolumetrics {Height = packageHeight, Length = packageLength, Weight = weight, Width = packageWidth}}
-            });
+            return splitVolumetrics;
         }
 
         private static IList<GetShippingOptionRequest.PackageItem> GetShippableCartItems(GetShippingOptionRequest shipmentPackage) {
@@ -565,12 +553,12 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps {
         }
 
         private decimal GetPackageSubTotal(GetShippingOptionRequest shipmentPackage) {
-            return shipmentPackage.Items.Where(item => !item.ShoppingCartItem.IsFreeShipping).Sum(item => _priceCalculationService.GetSubTotal(item.ShoppingCartItem, true));
+            return shipmentPackage.Items.Where(item => !item.ShoppingCartItem.IsFreeShipping).Sum(item => _priceCalculationService.GetSubTotal(item.ShoppingCartItem));
         }
 
         protected bool IsDomesticRequest(GetShippingOptionRequest shipmentPackage) {
             //Origin Country must be USA, Collect USA from list of countries
-            if (shipmentPackage == null || shipmentPackage.ShippingAddress == null || shipmentPackage.ShippingAddress.Country == null) {
+            if (shipmentPackage?.ShippingAddress?.Country == null) {
                 return true;
             }
             return shipmentPackage.ShippingAddress.Country.ThreeLetterIsoCode == "USA";

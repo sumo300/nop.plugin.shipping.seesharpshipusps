@@ -187,19 +187,19 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps.Controllers {
             _uspsSettings.InsuranceEnabled = model.InsuranceEnabled;
 
             if (model.CheckedBaseDomesticServices != null) {
-                _uspsSettings.BaseDomesticServicesSelected = model.CheckedBaseDomesticServices.Aggregate((a, b) => string.Format("{0},{1}", a, b));
+                _uspsSettings.BaseDomesticServicesSelected = model.CheckedBaseDomesticServices.Aggregate((a, b) => $"{a},{b}");
             }
 
             if (model.CheckedDomesticServices != null) {
-                _uspsSettings.DomesticServicesSelected = model.CheckedDomesticServices.Aggregate((a, b) => string.Format("{0},{1}", a, b));
+                _uspsSettings.DomesticServicesSelected = model.CheckedDomesticServices.Aggregate((a, b) => $"{a},{b}");
             }
 
             if (model.CheckedBaseInternationalServices != null) {
-                _uspsSettings.BaseInternationalServicesSelected = model.CheckedBaseInternationalServices.Aggregate((a, b) => string.Format("{0},{1}", a, b));
+                _uspsSettings.BaseInternationalServicesSelected = model.CheckedBaseInternationalServices.Aggregate((a, b) => $"{a},{b}");
             }
 
             if (model.CheckedInternationalServices != null) {
-                _uspsSettings.InternationalServicesSelected = model.CheckedInternationalServices.Aggregate((a, b) => string.Format("{0},{1}", a, b));
+                _uspsSettings.InternationalServicesSelected = model.CheckedInternationalServices.Aggregate((a, b) => $"{a},{b}");
             }
 
             _settingService.SaveSetting(_uspsSettings);
