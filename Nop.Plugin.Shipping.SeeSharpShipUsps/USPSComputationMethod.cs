@@ -70,7 +70,7 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps {
 
             var response = new GetShippingOptionResponse();
 
-            if (getShippingOptionRequest.Items == null) {
+            if (getShippingOptionRequest.Items == null || getShippingOptionRequest.Items.Count == 0) {
                 response.AddError("No shipment items");
                 return response;
             }
