@@ -51,7 +51,7 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps {
             _priceCalculationService = priceCalculationService;
             _loggerService = logger;
             _uspsPackageSplitter = new USPSPackageSplitterService(measureService, shippingService, measureSettings);
-            
+
             // ReSharper disable once CSharpWarnings::CS0618
             _rateService = string.IsNullOrWhiteSpace(_uspsSettings.Url) ? new RateService() : new RateService(_uspsSettings.Url, new PostRequest());
         }
@@ -476,7 +476,7 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps {
             MeasureDimension baseUsedMeasureDimension = _uspsVolumetricsService.GetBaseUsedMeasureDimension();
 
             IList<GetShippingOptionRequest.PackageItem> items = GetShippableCartItems(shipmentPackage);
-            
+
             decimal weight = totalWeight;
             int packageLength = _uspsVolumetricsService.GetLength(shipmentPackage, usedMeasureDimension, baseUsedMeasureDimension);
             int packageHeight = _uspsVolumetricsService.GetHeight(shipmentPackage, usedMeasureDimension, baseUsedMeasureDimension);
@@ -502,7 +502,7 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps {
             List<GetShippingOptionRequest.PackageItem> items = shipmentPackage.Items
                 .Where(i => i.ShoppingCartItem.IsShipEnabled &&
                     i.ShoppingCartItem.Product.IsShipEnabled &&
-                    !i.ShoppingCartItem.Product.IsGiftCard && 
+                    !i.ShoppingCartItem.Product.IsGiftCard &&
                     !i.ShoppingCartItem.Product.IsDownload)
                 .ToList();
             return items;
