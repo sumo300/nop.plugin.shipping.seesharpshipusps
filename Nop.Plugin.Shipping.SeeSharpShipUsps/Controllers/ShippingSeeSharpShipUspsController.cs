@@ -23,7 +23,7 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps.Controllers {
         public ShippingSeeSharpShipUspsController(SeeSharpShipUspsSettings uspsSettings, ISettingService settingService) {
             _uspsSettings = uspsSettings;
             _settingService = settingService;
-            
+
             // ReSharper disable once CSharpWarnings::CS0618
             _rateService = _uspsSettings.Url == null ? new RateService() : new RateService(_uspsSettings.Url, new PostRequest());
         }
@@ -122,8 +122,7 @@ namespace Nop.Plugin.Shipping.SeeSharpShipUsps.Controllers {
         }
 
         private void LoadDomesticServices(USPSShippingModel model) {
-            IEnumerable<ServiceInfo> availableServices = _rateService.DomesticServices(_uspsSettings.Username, _uspsSettings.Password,
-                _uspsSettings.ZipPostalCodeFrom);
+            IEnumerable<ServiceInfo> availableServices = _rateService.DomesticServices(_uspsSettings.Username, _uspsSettings.Password, _uspsSettings.ZipPostalCodeFrom);
 
             foreach (ServiceInfo service in availableServices) {
                 model.DomesticServices.Add(new USPSSelectableService {
