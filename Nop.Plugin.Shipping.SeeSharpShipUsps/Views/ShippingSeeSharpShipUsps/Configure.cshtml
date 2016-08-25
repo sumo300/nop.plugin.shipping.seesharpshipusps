@@ -3,140 +3,153 @@
 }
 @model Nop.Plugin.Shipping.SeeSharpShipUsps.Models.USPSShippingModel
 @using Nop.Web.Framework;
-@using (Html.BeginForm()) {
+
+@using (Html.BeginForm())
+{
     @Html.AntiForgeryToken()
-    <table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.NopLabelFor(model => model.Url):
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.Url)
-                @Html.ValidationMessageFor(model => model.Url)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.NopLabelFor(model => model.Username):
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.Username)
-                @Html.ValidationMessageFor(model => model.Username)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.NopLabelFor(model => model.Password):
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.Password)
-                @Html.ValidationMessageFor(model => model.Password)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.NopLabelFor(model => model.AdditionalHandlingCharge):
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.AdditionalHandlingCharge)
-                @Html.ValidationMessageFor(model => model.AdditionalHandlingCharge)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.NopLabelFor(model => model.MinimumShippingCharge):
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.MinimumShippingCharge)
-                @Html.ValidationMessageFor(model => model.MinimumShippingCharge)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.NopLabelFor(model => model.ZipPostalCodeFrom):
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.ZipPostalCodeFrom)
-                @Html.ValidationMessageFor(model => model.ZipPostalCodeFrom)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.NopLabelFor(model => model.InsuranceEnabled):
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.InsuranceEnabled)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.NopLabelFor(model => model.BaseDomesticServices):
-            </td>
-            <td class="adminData">
-                <div style="height: 250px; width: 200px; overflow: auto; border: solid 1px #bbb;">
-                    @foreach (var service in Model.BaseDomesticServices)
-                    {
-                        <input type="checkbox" name="CheckedBaseDomesticServices" value="@(service.Id)" @(service.IsChecked ? Html.Raw(" checked=\"checked\"") : null) />
-                        <label>@service.Name</label>
-                        <br />
-                    }
+    <div class="panel-group">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="col-md-3">
+                        @Html.NopLabelFor(model => model.Url)
+                    </div>
+                    <div class="col-md-9">
+                        @Html.NopEditorFor(model => model.Url)
+                        @Html.ValidationMessageFor(model => model.Url)
+                    </div>
                 </div>
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.NopLabelFor(model => model.DomesticServices):
-            </td>
-            <td class="adminData">
-                <div style="height: 250px; width: 440px; overflow: auto; border: solid 1px #bbb;">
-                    @foreach (var service in Model.DomesticServices)
-                    {
-                        <input type="checkbox" name="CheckedDomesticServices" value="@(service.Id)" @(service.IsChecked ? Html.Raw(" checked=\"checked\"") : null) />
-                        <label>@Html.Raw(service.Name)</label>
-                        <br />
-                    }
+                <div class="form-group">
+                    <div class="col-md-3">
+                        @Html.NopLabelFor(model => model.Username)
+                    </div>
+                    <div class="col-md-9">
+                        @Html.NopEditorFor(model => model.Username)
+                        @Html.ValidationMessageFor(model => model.Username)
+                    </div>
                 </div>
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.NopLabelFor(model => model.BaseInternationalServices):
-            </td>
-            <td class="adminData">
-                <div style="height: 250px; width: 200px; overflow: auto; border: solid 1px #bbb;">
-                    @foreach (var service in Model.BaseInternationalServices)
-                    {
-                        <input type="checkbox" name="CheckedBaseInternationalServices" value="@(service.Id)" @(service.IsChecked ? Html.Raw(" checked=\"checked\"") : null) />
-                        <label>@service.Name</label>
-                        <br />
-                    }
+                <div class="form-group">
+                    <div class="col-md-3">
+                        @Html.NopLabelFor(model => model.Password)
+                    </div>
+                    <div class="col-md-9">
+                        @Html.NopEditorFor(model => model.Password)
+                        @Html.ValidationMessageFor(model => model.Password)
+                    </div>
                 </div>
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.NopLabelFor(model => model.InternationalServices):
-            </td>
-            <td class="adminData">
-                <div style="height: 250px; width: 400px; overflow: auto; border: solid 1px #bbb;">
-                    @foreach (var service in Model.InternationalServices)
-                    {
-                        <input type="checkbox" name="CheckedInternationalServices" value="@(service.Id)" @(service.IsChecked ? Html.Raw(" checked=\"checked\"") : null) />
-                        <label>@Html.Raw(service.Name)</label>
-                        <br />
-                    }
+                <div class="form-group">
+                    <div class="col-md-3">
+                        @Html.NopLabelFor(model => model.ZipPostalCodeFrom)
+                    </div>
+                    <div class="col-md-9">
+                        @Html.NopEditorFor(model => model.ZipPostalCodeFrom)
+                        @Html.ValidationMessageFor(model => model.ZipPostalCodeFrom)
+                    </div>
                 </div>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2" width="100%">
-                <input type="submit" name="save" class="t-button" value="@T("Admin.Common.Save")" />
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2" width="100%">
-                Plugin Version: @Model.PluginVersion
-            </td>
-        </tr>
-    </table>    
+                <div class="form-group">
+                    <div class="col-md-3">
+                        @Html.NopLabelFor(model => model.AdditionalHandlingCharge)
+                    </div>
+                    <div class="col-md-9">
+                        @Html.NopEditorFor(model => model.AdditionalHandlingCharge)
+                        @Html.ValidationMessageFor(model => model.AdditionalHandlingCharge)
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        @Html.NopLabelFor(model => model.MinimumShippingCharge)
+                    </div>
+                    <div class="col-md-9">
+                        @Html.NopEditorFor(model => model.MinimumShippingCharge)
+                        @Html.ValidationMessageFor(model => model.MinimumShippingCharge)
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        @Html.NopLabelFor(model => model.InsuranceEnabled)
+                    </div>
+                    <div class="col-md-9">
+                        @Html.NopEditorFor(model => model.InsuranceEnabled)
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        @Html.NopLabelFor(model => model.BaseDomesticServices)
+                    </div>
+                    <div class="col-md-9">
+                        @foreach (var service in Model.BaseDomesticServices)
+                        {
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="CheckedBaseDomesticServices" value="@(service.Id)" @(service.IsChecked ? Html.Raw(" checked=\"checked\"") : null) />
+                                    @service.Name
+                                </label>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        @Html.NopLabelFor(model => model.DomesticServices)
+                    </div>
+                    <div class="col-md-9">
+                        @foreach (var service in Model.DomesticServices)
+                        {
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="CheckedDomesticServices" value="@(service.Id)" @(service.IsChecked ? Html.Raw(" checked=\"checked\"") : null) />
+                                    @service.Name
+                                </label>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        @Html.NopLabelFor(model => model.BaseInternationalServices)
+                    </div>
+                    <div class="col-md-9">
+                        @foreach (var service in Model.BaseInternationalServices)
+                        {
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="CheckedBaseInternationalServices" value="@(service.Id)" @(service.IsChecked ? Html.Raw(" checked=\"checked\"") : null) />
+                                    @service.Name
+                                </label>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        @Html.NopLabelFor(model => model.InternationalServices)
+                    </div>
+                    <div class="col-md-9">
+                        @foreach (var service in Model.InternationalServices)
+                        {
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="CheckedInternationalServices" value="@(service.Id)" @(service.IsChecked ? Html.Raw(" checked=\"checked\"") : null) />
+                                    @service.Name
+                                </label>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        &nbsp;
+                    </div>
+                    <div class="col-md-9">
+                        <input type="submit" name="save" class="btn bg-blue" value="@T("Admin.Common.Save")" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-12">
+                        Plugin Version: @Model.PluginVersion
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 }

@@ -1,7 +1,16 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nop.Plugin.Shipping.SeeSharpShipUsps", "Nop.Plugin.Shipping.SeeSharpShipUsps\Nop.Plugin.Shipping.SeeSharpShipUsps.csproj", "{99FBA7D6-AC98-4B64-8611-D40050FB5476}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{453ADA3F-182B-4CF9-B125-C7786C0AFEC8}"
+	ProjectSection(SolutionItems) = preProject
+		build.bat = build.bat
+		make.ps1 = make.ps1
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
