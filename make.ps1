@@ -2,7 +2,7 @@ param (
 	[string]$configuration = "Release"
 )
 
-Set-Alias msbuild C:\Windows\Microsoft.NET\Framework\v4.0.30319\msbuild.exe;
+Set-Alias msbuild "C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild.exe";
 
 $projectName = "Nop.Plugin.Shipping.SeeSharpShipUsps";
 $projectPath = ".\$projectName\$projectName.csproj"; 
